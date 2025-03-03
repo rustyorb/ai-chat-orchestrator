@@ -61,14 +61,22 @@ class MemorySettings(BaseModel):
 class Persona(BaseModel):
     id: str
     name: str
-    avatar: str
-    system_prompt: str
-    model_id: str
-    parameters: ModelParameters
-    memory_settings: MemorySettings
-    conversation_style: str
+    avatar: Optional[str] = "default"
+    system_prompt: Optional[str] = ""
+    model_id: Optional[str] = "default"
+    parameters: Optional[ModelParameters] = None
+    memory_settings: Optional[MemorySettings] = None
+    conversation_style: Optional[str] = "default"
     created: int
     updated: int
+
+    @validator('parameters', pre=True, always=True)
+    def set_default_parameters(cls, v):
+        return v or ModelParameters()
+
+    @validator('memory_settings', pre=True, always=True)
+    def set_default_memory_settings(cls, v):
+        return v or MemorySettings()
 
 class Message(BaseModel):
     id: str

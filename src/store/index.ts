@@ -7,6 +7,8 @@ import uiReducer from './slices/uiSlice';
 import { personaMiddleware } from './middleware/personaMiddleware';
 import { modelMiddleware } from './middleware/modelMiddleware';
 import { conversationMiddleware } from './middleware/conversationMiddleware';
+import { modelPersistenceMiddleware } from './middleware/modelPersistenceMiddleware';
+import { settingsPersistenceMiddleware } from './middleware/settingsPersistenceMiddleware';
 
 export const store = configureStore({
   reducer: {
@@ -19,7 +21,13 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat(personaMiddleware, modelMiddleware, conversationMiddleware),
+    }).concat(
+      personaMiddleware, 
+      modelMiddleware, 
+      conversationMiddleware, 
+      modelPersistenceMiddleware,
+      settingsPersistenceMiddleware
+    ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

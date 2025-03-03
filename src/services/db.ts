@@ -10,6 +10,14 @@ class AppDatabase extends Dexie {
   constructor() {
     super('AIOrchestrator');
     
+    this.version(2).stores({
+      personas: 'id, name, modelId, created, updated',
+      conversations: 'id, title, created, updated, isActive',
+      models: 'id, name, provider, apiKey, baseUrl',
+      settings: '',
+    });
+    
+    // Migration for existing data
     this.version(1).stores({
       personas: 'id, name, modelId, created, updated',
       conversations: 'id, title, created, updated, isActive',
