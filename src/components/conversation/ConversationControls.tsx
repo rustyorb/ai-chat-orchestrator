@@ -252,24 +252,40 @@ const ConversationControls: React.FC<ConversationControlsProps> = ({
 
     setAutoMode(true);
 
-    // Trigger first turn
-    if (!isGenerating) {
-      triggerNextTurn();
-    }
+    // Register all personas first to ensure they're in the backend
+    participants.forEach((participantId) => {
+      const persona = personas.find((p) => p.id === participantId);
+      if (persona) {
+        console.log(
+          `🔍 DEBUG - Registering persona before auto mode: ${persona.name}`
+        );
+        websocketService.send("register_persona", {
+          persona: persona,
+        });
+      }
+    });
 
-    // Set up a timer to trigger the next turn after a delay
-    autoModeRef.current = setInterval(() => {
-      console.log("🔍 DEBUG - Auto mode interval triggered");
-
-      // Only trigger next turn if not currently generating
-      if (
-        conversationStatus.status !== "generating" &&
-        conversationStatus.status !== "paused" &&
-        conversationStatus.status !== "stopped"
-      ) {
+    // Wait a moment for registration to complete before triggering first turn
+    setTimeout(() => {
+      // Trigger first turn
+      if (!isGenerating) {
         triggerNextTurn();
       }
-    }, turnDelay);
+
+      // Set up a timer to trigger the next turn after a delay
+      autoModeRef.current = setInterval(() => {
+        console.log("🔍 DEBUG - Auto mode interval triggered");
+
+        // Only trigger next turn if not currently generating
+        if (
+          conversationStatus.status !== "generating" &&
+          conversationStatus.status !== "paused" &&
+          conversationStatus.status !== "stopped"
+        ) {
+          triggerNextTurn();
+        }
+      }, turnDelay);
+    }, 500); // Short delay to allow registration to complete
   };
 
   const stopAutoMode = () => {

@@ -12,6 +12,20 @@ class WebSocketService {
   private eventHandlers: { [key: string]: Array<(data: any) => void> } = {};
   private isEnabled = false; // Flag to control connection attempts
 
+  // Method to register all personas with the backend
+  registerAllPersonas(): void {
+    const store_state = store.getState();
+    const personas = store_state.personas.personas;
+    
+    console.log("🔍 DEBUG - Registering all personas with backend:", personas.length);
+    
+    personas.forEach(persona => {
+      this.send('register_persona', {
+        persona: persona
+      });
+    });
+  }
+
   constructor(url: string) {
     this.url = url;
   }
@@ -71,6 +85,10 @@ class WebSocketService {
       this.socket.onopen = () => {
         console.log('🔍 DEBUG - WebSocket connection successfully established');
         this.reconnectAttempts = 0;
+        
+        // Register all personas when connection is established
+        this.registerAllPersonas();
+        
         this.dispatchEvent('connected', null);
         console.log('🔍 DEBUG - Dispatched "connected" event');
         
